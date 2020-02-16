@@ -1,0 +1,181 @@
+" ==============================================================================
+" = iVim Settings ==============================================================
+" ==============================================================================
+
+" => General ===================================================================
+set history=500
+
+" Enable filetype plugins
+filetype plugin on
+filetype indent on
+
+" => VIM user interface ========================================================
+set number
+set ruler
+set hid
+set backspace=eol,start,indent
+set whichwrap+=<,>,h,l
+set ignorecase
+set smartcase
+set hlsearch
+set incsearch
+set lazyredraw
+set magic
+set showmatch
+set mat=2
+set showcmd
+set wrapscan
+set matchtime=3
+set list
+set autoindent
+set hidden
+set ttyfast
+set cursorline
+set cursorcolumn
+set colorcolumn=80
+
+" No annoying sound on errors
+set noerrorbells
+set novisualbell
+set t_vb=
+set tm=500
+set belloff=all
+set vb t_vb=
+
+" => Colors and Fonts ==========================================================
+colorscheme molokai
+set t_Co=256
+set encoding=utf8
+set ffs=unix,dos,mac
+set fileencoding=utf-8
+set fileencodings=utf-8,iso-2022-jp,euc-jp,sjis
+
+set guifont=HackGen-Regular.ttf:h20
+
+" => Files, backups and undo ===================================================
+set noswapfile
+set nobackup
+set nowb
+
+" => Text, tab and indent related ==============================================
+set expandtab
+set smarttab
+set shiftwidth=4
+set tabstop=4
+set softtabstop=0
+set lbr
+set tw=500
+set ai
+set si
+set wrap
+set helplang=ja
+
+" => Status line & Tab line ====================================================
+set laststatus=2
+set cmdheight=3
+set showtabline=2
+set guioptions-=e
+
+" => Custom Key Mappings =======================================================
+let mapleader = ","
+
+"  Moving windows
+nnoremap <C-j>                  <C-W>j
+nnoremap <C-k>                  <C-W>k
+nnoremap <C-h>                  <C-W>h
+nnoremap <C-l>                  <C-W>l
+
+" Like windows keymapping
+inoremap <C-v>                  <C-r>*
+inoremap <C-e>                  <End>
+vnoremap <C-C>                  "+y
+nnoremap <C-a>                  ggVG
+nnoremap <C-e>                  <End>
+
+" Tab control
+nnoremap <C-t>                  :tabe<cr>
+nnoremap <C-tab>                :tabnext<cr>
+nnoremap <C-S-tab>              :tabprevious<cr>
+
+nnoremap <silent><Leader><S-S>  :Startify<CR>
+nnoremap <silent><Leader>b      :call BufferList()<CR>
+nnoremap <silent><Leader>f      :MRU<CR>
+nnoremap <silent><Leader>t      :vert terminal<CR>
+nnoremap <silent><Leader>v      :source ~/.vimrc<CR>
+nnoremap <silent><Leader>n      :NERDTree<CR>
+nnoremap <silent><Leader>m      :put =execute('messages') "<CR>
+
+" Input Back Slash (Only iVim)
+inoremap ¥                      \
+
+" => Plugin ====================================================================
+
+" Markdown
+let g:vim_markdown_folding_disabled = 1
+
+" QuickRun
+let g:quickrun_config = {}
+let g:quickrun_config.python = {'command': 'python3'}
+
+" indentLine
+let g:indentLine_setColors = 0
+let g:indentLine_color_term = 239
+
+" Language Server Protocol
+if executable('pyls')
+    augroup vim_lsp_pyls
+        autocmd!
+        autocmd User lsp_setup call lsp#register_server({
+            \ 'name': 'pyls',
+            \ 'cmd': {server_info->['pyls']},
+            \ 'whitelist': ['python'],
+            \ })
+        autocmd FileType python setlocal omnifunc=lsp#complete
+    augroup end
+endif
+set completeopt+=menuone
+
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    nmap <buffer> gd <plug>(lsp-definition)
+    nmap <buffer> <f2> <plug>(lsp-rename)
+endfunction
+
+augroup lsp_install
+    au!
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
+" Unite
+let g:unite_enable_start_insert=1
+let g:unite_source_history_yank_enable =1
+let g:unite_source_file_mru_limit = 200
+nnoremap <silent> ,uy :<C-u>Unite history/yank<CR>
+nnoremap <silent> ,ub :<C-u>Unite buffer<CR>
+nnoremap <silent> ,uf :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
+nnoremap <silent> ,ur :<C-u>Unite -buffer-name=register register<CR>
+nnoremap <silent> ,uu :<C-u>Unite ultisnips<CR>
+nnoremap <silent> ,ui <Plug>(unite_insert_enter)
+au FileType unite nnoremap     unite#do_action('split') " ウィンドウを分割して開く
+au FileType unite inoremap     unite#do_action('split')
+
+" Subversive
+nmap <leader>s      <plug>(SubversiveSubstituteRange)
+xmap <leader>s      <plug>(SubversiveSubstituteRange)
+nmap <leader>ss     <plug>(SubversiveSubstituteWordRange)
+
+" UltiSnips
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsEditSplit="vertical"
+let g:UltiSnipsSnippetDirectories=[ 'UltiSnips',expand('~/.vim/UltiSnips/')]
+
+" => My Defined Commands =======================================================
+command! -nargs=+ PlugInstall :!python3 ~/bin/pluginInstall.py <args>
+command! -nargs=+ PlugRemove :!python3 ~/bin/pluginRemove.py <args>
+command! -nargs=1 Opvimgrep :vimgrep /<args>/g % | cw
+nnoremap <Leader>g :Opvimgrep 
+
+"===============================================================================
