@@ -116,6 +116,8 @@ let g:vim_markdown_folding_disabled = 1
 " QuickRun
 let g:quickrun_config = {}
 let g:quickrun_config.python = {'command': 'python3'}
+let g:quickrun_config={'*': {'split': ''}}
+set splitbelow
 
 " indentLine
 let g:indentLine_setColors = 0
@@ -177,5 +179,6 @@ command! -nargs=+ PlugInstall :!python3 ~/bin/pluginInstall.py <args>
 command! -nargs=+ PlugRemove :!python3 ~/bin/pluginRemove.py <args>
 command! -nargs=1 Opvimgrep :vimgrep /<args>/g % | cw
 nnoremap <Leader>g :Opvimgrep 
+source ~/dotfiles/excmd.vim
 
 "===============================================================================
